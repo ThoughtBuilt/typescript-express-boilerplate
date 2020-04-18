@@ -1,0 +1,13 @@
+# Mac OS
+.DS_Store
+
+# dotenv environment variables
+.env
+.env.test
+
+# Compiled TypeScript
+/dist/
+
+# Package dependencies
+/node_modules/
+
