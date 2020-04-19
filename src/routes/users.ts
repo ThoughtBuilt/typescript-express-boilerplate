@@ -1,36 +1,29 @@
+import createError from "http-errors";
 import type { Router } from "express";
 import type { UserService, User } from "../services/user-service";
 
-export default ({
-  router,
-  userService,
-}: {
+type Dependencies = {
   router: Router;
   userService: UserService;
-}) => {
+};
+
+export default (services: Dependencies) => {
+  const { router } = services;
   return (
     router
       /* GET users listing. */
       .get("/", function (req, res, next) {
-        res.send(
-          "<ol>" +
-            userService
-              .listAllUsers()
-              .map((user: User) => {
-                return `<li><a href="/users/${user.id}">${user.name}</a></li>`;
-              })
-              .join("") +
-            "</ol>"
-        );
+        const users = services.userService.listAllUsers();
+        res.render("users", { users });
       })
       /* Show user page */
       .get("/:userId", function (req, res, next) {
         const userId = +req.params.userId;
-        const user = userService.getById(userId);
+        const user = services.userService.getById(userId);
         if (user) {
-          res.send(`Welcome, ${user.name}!`);
+          res.render("user", { user });
         } else {
-          res.status(404).send(`User id=${userId} not found!`);
+          next(createError(404, `User id=${userId} not found!`));
         }
       })
   );

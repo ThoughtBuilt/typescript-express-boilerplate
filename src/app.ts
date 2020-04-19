@@ -1,28 +1,55 @@
 import path from "path";
 import express from "express";
+import hbs from "hbs";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
 import { inherit, replace } from "./lib/object-utils";
+import { defaultRoute, errorHandler } from "./lib/express-utils";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import { TestUserService } from "./services/user-service";
+
+enum ViewEngines {
+  handlebars = "hbs",
+}
 
 // Below is a simple application container.
 // https://en.wikipedia.org/wiki/Dependency_injection
 const container = {
   appFactory: express,
 
-  routerFactory: express.Router,
-
   appDocRoot: path.join(__dirname, "..", "public"),
 
+  appViewRoot: path.join(__dirname, "..", "views"),
+  appViewEngine: ViewEngines.handlebars,
+
+  routerFactory: express.Router,
+
   get app() {
-    const app = this.appFactory();
+    const app = replace(cache, "app", this.appFactory());
+
+    // Setup View engine
+    app.engine(this.appViewEngine, this[this.appViewEngine].__express);
+    app.set("views", this.appViewRoot);
+    app.set("view engine", this.appViewEngine);
+
+    // Install middleware
     this.middleware.forEach((middleware) => app.use(middleware));
+
+    // Install routes
     this.routes.forEach((route, path) => app.use(path, route));
-    return replace(cache, "app", app);
+    app.use(this.defaultRoute);
+
+    // Install error handler
+    app.use(this.errorHandler);
+
+    return app;
+  },
+
+  get hbs() {
+    return replace(cache, "hbs", hbs.create());
   },
 
   get middleware() {
@@ -59,6 +86,10 @@ const container = {
     ]);
     return replace(cache, "routes", routes);
   },
+
+  defaultRoute,
+
+  errorHandler,
 
   get usersRouter() {
     const deps = inherit(this, { router: this.routerFactory() });
