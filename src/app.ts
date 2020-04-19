@@ -3,7 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
-import { inherit, keep } from "./lib/object-utils";
+import { inherit, replace } from "./lib/object-utils";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
@@ -22,11 +22,11 @@ const container = {
     const app = this.appFactory();
     this.middleware.forEach((middleware) => app.use(middleware));
     this.routes.forEach((route, path) => app.use(path, route));
-    return keep(cache, "app", app);
+    return replace(cache, "app", app);
   },
 
   get middleware() {
-    return keep(cache, "middleware", [
+    return replace(cache, "middleware", [
       // HTTP request logger middleware for node.js
       // https://github.com/expressjs/morgan#dev
       // dev: Concise output colored by response status for development use.
@@ -57,16 +57,16 @@ const container = {
       ["/", indexRouter()],
       ["/users", this.usersRouter],
     ]);
-    return keep(cache, "routes", routes);
+    return replace(cache, "routes", routes);
   },
 
   get usersRouter() {
     const deps = inherit(this, { router: this.routerFactory() });
-    return keep(cache, "usersRouter", usersRouter(deps));
+    return replace(cache, "usersRouter", usersRouter(deps));
   },
 
   get userService() {
-    return keep(cache, "userService", new TestUserService());
+    return replace(cache, "userService", new TestUserService());
   },
 };
 
