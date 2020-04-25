@@ -1,6 +1,6 @@
 import createError from "http-errors";
 import type { Router } from "express";
-import type { UserService, User } from "../services/user-service";
+import type { UserService } from "../services/user-service";
 
 type Dependencies = {
   router: Router;
