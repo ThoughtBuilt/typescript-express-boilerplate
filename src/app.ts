@@ -4,7 +4,7 @@ import hbs from "hbs";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 
-import { inherit, replace } from "./lib/object-utils";
+import { inherit, replace as set } from "./lib/object-utils";
 import { defaultRoute, errorHandler } from "./lib/express-utils";
 
 import indexRouter from "./routes/index";
@@ -28,7 +28,7 @@ const container = {
   routerFactory: express.Router,
 
   get app() {
-    const app = replace(container, "app", this.appFactory());
+    const app = set(container, "app", this.appFactory());
 
     // Setup View engine
     app.engine(this.appViewEngine, this[this.appViewEngine].__express);
@@ -49,11 +49,11 @@ const container = {
   },
 
   get hbs() {
-    return replace(container, "hbs", hbs.create());
+    return set(container, "hbs", hbs.create());
   },
 
   get middleware() {
-    return replace(container, "middleware", [
+    return set(container, "middleware", [
       // HTTP request logger middleware for node.js
       // https://github.com/expressjs/morgan#dev
       // dev: Concise output colored by response status for development use.
@@ -84,7 +84,7 @@ const container = {
       ["/", indexRouter()],
       ["/users", this.usersRouter],
     ]);
-    return replace(container, "routes", routes);
+    return set(container, "routes", routes);
   },
 
   defaultRoute,
@@ -93,11 +93,11 @@ const container = {
 
   get usersRouter() {
     const deps = inherit(this, { router: this.routerFactory() });
-    return replace(container, "usersRouter", usersRouter(deps));
+    return set(container, "usersRouter", usersRouter(deps));
   },
 
   get userService() {
-    return replace(container, "userService", new TestUserService());
+    return set(container, "userService", new TestUserService());
   },
 };
 
