@@ -2,13 +2,16 @@
   "name": "typescript-express-boilerplate",
   "version": "0.0.0",
   "private": true,
+  "config": {
+    "debug_port": 9229
+  },
   "scripts": {
-    "postinstall": "npm run build",
     "build": "tsc && npm run copy:json",
     "copy:json": "rsync -am --include='*/' --include='*.json' --exclude='*' src/ dist/",
+    "prestart": "npm run build",
     "start": "node ./bin/www",
-    "start-dev": "DEBUG=$npm_package_name:* ts-node-dev --transpile-only --inspect -- ./src",
-    "debug": "DEBUG=$npm_package_name:* ts-node-dev --transpile-only --inspect-brk -- ./src"
+    "start-dev": "DEBUG=$npm_package_name:* ts-node-dev --transpile-only --inspect=$npm_package_config_debug_port -- ./src",
+    "debug": "DEBUG=$npm_package_name:* ts-node-dev --transpile-only --inspect-brk=$npm_package_config_debug_port -- ./src"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -27,7 +30,7 @@
     "@types/hbs": "^4.0.1",
     "@types/http-errors": "^1.6.3",
     "@types/morgan": "^1.9.0",
-    "@types/node": "^13.13.0",
+    "@types/node": "^13.13.2",
     "prettier": "2.0.4",
     "ts-node-dev": "^1.0.0-pre.44",
     "typescript": "^3.8.3"
