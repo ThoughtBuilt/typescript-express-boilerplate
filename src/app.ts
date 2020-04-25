@@ -28,7 +28,7 @@ const container = {
   routerFactory: express.Router,
 
   get app() {
-    const app = replace(cache, "app", this.appFactory());
+    const app = replace(container, "app", this.appFactory());
 
     // Setup View engine
     app.engine(this.appViewEngine, this[this.appViewEngine].__express);
@@ -49,11 +49,11 @@ const container = {
   },
 
   get hbs() {
-    return replace(cache, "hbs", hbs.create());
+    return replace(container, "hbs", hbs.create());
   },
 
   get middleware() {
-    return replace(cache, "middleware", [
+    return replace(container, "middleware", [
       // HTTP request logger middleware for node.js
       // https://github.com/expressjs/morgan#dev
       // dev: Concise output colored by response status for development use.
@@ -84,7 +84,7 @@ const container = {
       ["/", indexRouter()],
       ["/users", this.usersRouter],
     ]);
-    return replace(cache, "routes", routes);
+    return replace(container, "routes", routes);
   },
 
   defaultRoute,
@@ -93,14 +93,12 @@ const container = {
 
   get usersRouter() {
     const deps = inherit(this, { router: this.routerFactory() });
-    return replace(cache, "usersRouter", usersRouter(deps));
+    return replace(container, "usersRouter", usersRouter(deps));
   },
 
   get userService() {
-    return replace(cache, "userService", new TestUserService());
+    return replace(container, "userService", new TestUserService());
   },
 };
 
-// Construct and export read-through cache of container.
-const cache = inherit(container);
-export default cache;
+export default container;
