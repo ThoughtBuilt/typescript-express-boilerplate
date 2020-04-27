@@ -3,6 +3,13 @@ import type net from "net";
 import createDebug from "debug";
 import type { Express } from "express";
 
+type Parameters = {
+  app: Express;
+  appName?: string;
+  serverFactory?: ServerFactory;
+  port?: number | string | false;
+};
+
 interface RequestListener {
   (req: any, res: any): any;
 }
@@ -13,16 +20,11 @@ interface ServerFactory {
 
 export default ({
   app,
-  port = normalizePort(process.env.PORT || "3000"),
-  serverName = process.env.npm_package_name || "",
+  appName = process.env.npm_package_name || "",
   serverFactory = http.createServer,
-}: {
-  app: Express;
-  port?: number | string | false;
-  serverName?: string;
-  serverFactory?: ServerFactory;
-}) => {
-  const debug = createDebug(serverName + ":server");
+  port = normalizePort(process.env.PORT || "3000"),
+}: Parameters) => {
+  const debug = createDebug(appName + ":server");
 
   /*
    * Get port from environment and store in Express.
