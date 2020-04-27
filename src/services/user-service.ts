@@ -4,15 +4,15 @@ export interface User {
 }
 
 export interface UserService {
-  getById(id: number): User | undefined;
-  listAllUsers(): User[];
+  getById(id: number): Promise<User | undefined>;
+  listAllUsers(): Promise<User[]>;
 }
 
 export class TestUserService implements UserService {
-  getById(id: number): User | undefined {
+  async getById(id: number) {
     return testUsers.get(id);
   }
-  listAllUsers() {
+  async listAllUsers() {
     return Array.from(testUsers.values());
   }
 }

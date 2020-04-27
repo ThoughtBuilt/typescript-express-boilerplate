@@ -12,14 +12,14 @@ export default (services: Dependencies) => {
   return (
     router
       /* GET users listing. */
-      .get("/", function (req, res, next) {
-        const users = services.userService.listAllUsers();
+      .get("/", async function (req, res, next) {
+        const users = await services.userService.listAllUsers();
         res.render("users", { users });
       })
       /* Show user page */
-      .get("/:userId", function (req, res, next) {
+      .get("/:userId", async function (req, res, next) {
         const userId = +req.params.userId;
-        const user = services.userService.getById(userId);
+        const user = await services.userService.getById(userId);
         if (user) {
           res.render("user", { user });
         } else {
