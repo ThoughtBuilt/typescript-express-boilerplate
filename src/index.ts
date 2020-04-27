@@ -1,5 +1,5 @@
 import "./env";
 import app from "./app";
-import server from "./server";
+import startServer from "./server";
 
-export default server(app);
+startServer(app);
