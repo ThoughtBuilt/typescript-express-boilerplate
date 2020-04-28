@@ -11,6 +11,8 @@ import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
 import { TestUserService } from "./services/user-service";
 
+const appName = process.env.npm_package_name || "app";
+
 enum ViewEngines {
   handlebars = "hbs",
 }
@@ -18,6 +20,8 @@ enum ViewEngines {
 // Below is a simple application container.
 // https://en.wikipedia.org/wiki/Dependency_injection
 const container = {
+  appName,
+
   appFactory: express,
 
   appDocRoot: path.join(__dirname, "..", "public"),
