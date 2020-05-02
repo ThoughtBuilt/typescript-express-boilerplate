@@ -1,0 +1,16 @@
+version: '3.4'
+
+services:
+  app:
+    environment:
+      NODE_ENV: development
+      TSND_OPTS: "--transpile-only --inspect=0.0.0.0:9229 --poll"
+    ports:
+      # Map port for node inspector.
+      - "9229:9229"
+    volumes:
+      # Mount the project dir (.) to /home/node/app in the container.
+      # Exclude node_modules. The container keeps its own.
+      - .:/home/node/app
+      - /home/node/app/node_modules
+    command: ["npm", "run", "debug"]

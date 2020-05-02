@@ -16,6 +16,57 @@
                 "${workspaceFolder}/node_modules/**/*.js",
                 "<node_internals>/**"
             ]
-        }
+        },
+        {
+            "type": "node",
+            "request": "attach",
+            "name": "Attach Debugger to Docker",
+            "port": 9229,
+            "restart": true,
+            "stopOnEntry": false,
+            "smartStep": true,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/home/node/app",
+            "sourceMapPathOverrides": {
+                "/home/node/app/*": "${workspaceFolder}/*",
+            },
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js",
+                "<node_internals>/**"
+            ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "app in Docker Compose",
+            "runtimeExecutable": "docker-compose",
+            "runtimeArgs": [
+                "run",
+                "--rm",
+                "--service-ports",
+                "app"
+            ],
+            /*
+            "args": [
+                "node",
+                "--inspect=0.0.0.0:9229",
+                "dist"
+            ],
+            */
+            "outputCapture": "std",
+            "port": 9229,
+            "restart": true,
+            "stopOnEntry": false,
+            "smartStep": true,
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "/home/node/app",
+            "sourceMapPathOverrides": {
+                "/home/node/app/*": "${workspaceFolder}/*",
+            },
+            "skipFiles": [
+                "${workspaceFolder}/node_modules/**/*.js",
+                "<node_internals>/**"
+            ]
+        },
     ]
 }

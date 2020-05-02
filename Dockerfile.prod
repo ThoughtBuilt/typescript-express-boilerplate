@@ -1,0 +1,61 @@
+# https://docs.docker.com/develop/develop-images/multistage-build/
+FROM node:14-alpine AS install-prod
+ENV NODE_ENV production
+
+# Tini - A tiny but valid init for containers
+# https://github.com/krallin/tini
+RUN apk add --no-cache tini
+
+# Set app directory; create if non-existent.
+#USER node
+#RUN mkdir -p /home/node/app
+WORKDIR /home/node/app
+
+# Copy package.json and package-lock.json to WORKDIR.
+# If neither has changed since last build, then Docker will use cached results
+# from the RUN command below as well.
+# https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#leverage-build-cache
+COPY package*.json ./
+
+# Install dependencies into WORKDIR.
+RUN npm install --only=production
+
+
+
+FROM install-prod AS install-dev
+
+# Install dev dependencies.
+RUN npm install --only=development
+
+
+
+FROM install-dev AS build
+
+# Copy the build context
+# (project directory excluding files/dirs in .dockerignore)
+# to WORKDIR.
+COPY . .
+
+# Build, then move the node_modules out of the way (up a level).
+RUN npm run build && mv node_modules ../
+
+
+
+FROM install-prod
+
+# Copy built app.
+COPY --from=build /home/node/app .
+
+# Set app to run on port 3000 and expose port.
+ENV PORT 3000
+EXPOSE 3000
+
+# Commands on this container are run as node user.
+USER node
+
+# Don't make Node.js accept the burden of running as PID 1.
+# https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md
+ENTRYPOINT ["/sbin/tini", "--", "docker-entrypoint.sh"]
+
+# Default command is to start app.
+CMD ["node", "dist"]
