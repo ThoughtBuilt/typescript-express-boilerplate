@@ -14,3 +14,13 @@ services:
       - .:/home/node/app
       - /home/node/app/node_modules
     command: ["npm", "run", "debug"]
+  mongo:
+    ports:
+      # Map service port to host for use with tools.
+      - "27017:27017"
+    volumes:
+      # Map data dir to named volume.
+      - mongo-data:/data/db
+volumes:
+  # Create a named volume that will survive container destruction.
+  mongo-data:

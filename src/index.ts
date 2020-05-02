@@ -1,4 +1,10 @@
 import app from "./app";
 import startServer from "./server";
 
-startServer(app);
+(async () => {
+  await app.start();
+  startServer(app);
+})();
+
+// TODO: Something more robust
+//process.on("SIGTERM", async () => await app.stop());

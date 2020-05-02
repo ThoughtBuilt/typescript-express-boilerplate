@@ -26,4 +26,6 @@ export const {
 
   /* App env vars */
   APP_NAME, // Name of application. (Override npm_package_name.)
+  MONGODB_URL, // Connection string to a MongoDB instance.
+  MONGODB_NAME, // Override database name in MONGODB_URL as default.
 } = process.env;

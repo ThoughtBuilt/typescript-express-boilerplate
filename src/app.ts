@@ -1,17 +1,18 @@
-import { APP_NAME, npm_package_name } from "./env";
+import { APP_NAME, npm_package_name, MONGODB_URL, MONGODB_NAME } from "./env";
 
 import path from "path";
 import express from "express";
 import hbs from "hbs";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
+import { MongoClient } from "mongodb";
 
 import { inherit, replace as put } from "./lib/object-utils";
 import { defaultRoute, errorHandler } from "./lib/express-utils";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
-import { TestUserService } from "./services/user-service";
+import { DbUserService } from "./services/user-service";
 
 const appRoot = path.resolve(__dirname, "..");
 const appName = APP_NAME || npm_package_name || path.basename(appRoot);
@@ -31,6 +32,22 @@ const container = {
 
   appFactory: express,
   routerFactory: express.Router,
+
+  mongodbUrl: MONGODB_URL || "mongodb://localhost:27017/" + appName,
+  mongoClientOptions: {
+    appname: appName,
+    useUnifiedTopology: true, // http://mongodb.github.io/node-mongodb-native/3.5/reference/unified-topology/
+  },
+
+  async start() {
+    await this.mongoClient.connect();
+    return this;
+  },
+
+  async stop() {
+    await this.mongoClient.close();
+    return this;
+  },
 
   get app() {
     const app = put(container, "app", this.appFactory());
@@ -101,8 +118,17 @@ const container = {
     return put(container, "usersRouter", usersRouter(deps));
   },
 
+  get mongoClient() {
+    const client = new MongoClient(this.mongodbUrl, this.mongoClientOptions);
+    return put(container, "mongoClient", client);
+  },
+
+  get db() {
+    return this.mongoClient.db(MONGODB_NAME);
+  },
+
   get userService() {
-    return put(container, "userService", new TestUserService());
+    return put(container, "userService", new DbUserService(this));
   },
 };
 
