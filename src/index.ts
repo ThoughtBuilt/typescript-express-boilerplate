@@ -1,4 +1,3 @@
-import "./env";
 import app from "./app";
 import startServer from "./server";
 
