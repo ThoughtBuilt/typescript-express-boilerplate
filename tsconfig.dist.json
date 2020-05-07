@@ -1,0 +1,17 @@
+{
+    "extends": "./tsconfig",
+    "compilerOptions": {
+        "sourceMap": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "**/__mocks__",
+        "**/__tests__",
+        "**/*.spec.ts",
+        "**/*.test.ts"
+      ]
+}

@@ -1,25 +1,19 @@
-**/.classpath
 **/.dockerignore
 **/.DS_Store
 **/.env
 **/.git
 **/.gitignore
-**/.project
-**/.settings
-**/.toolstarget
-**/.vs
 **/.vscode
-**/*.*proj.user
-**/*.dbmdl
-**/*.jfm
-**/azds.yaml
-**/charts
-**/dist
 **/docker-compose*
 **/Dockerfile*
 **/node_modules
-**/npm-debug.log
-**/obj
-**/secrets.dev.yaml
-**/values.dev.yaml
+dist
 README.md
+# Required for testing.
+# Remove rules below if testing within Docker.
+.prettierrc
+jest.config.js
+**/__mocks__
+**/__tests__
+**/*.test.ts
+**/*.spec.ts

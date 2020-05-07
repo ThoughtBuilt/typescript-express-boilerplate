@@ -14,14 +14,18 @@ export default (services: Dependencies) => {
       /* GET users listing. */
       .get("/", async function (req, res, next) {
         const users = await services.userService.listAllUsers();
-        res.render("users", { users });
+        req.accepts(["html", "json"]) === "json"
+          ? res.send({ users })
+          : res.render("users", { users });
       })
       /* Show user page */
       .get("/:userId", async function (req, res, next) {
         const userId = +req.params.userId;
         const user = await services.userService.getById(userId);
         if (user) {
-          res.render("user", { user });
+          req.accepts(["html", "json"]) === "json"
+            ? res.send({ user })
+            : res.render("user", { user });
         } else {
           next(createError(404, `User id=${userId} not found!`));
         }
