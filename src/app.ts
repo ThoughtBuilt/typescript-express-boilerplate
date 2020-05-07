@@ -7,12 +7,16 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import { MongoClient } from "mongodb";
 
-import { inherit, replace as put } from "./lib/object-utils";
+import {
+  inherit,
+  replace as put,
+  replaceSafe as putSafe,
+} from "./lib/object-utils";
 import { defaultRoute, errorHandler } from "./lib/express-utils";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
-import { DbUserService } from "./services/user-service";
+import { UserService, DbUserService } from "./services/user-service";
 
 const appRoot = path.resolve(__dirname, "..");
 const appName = APP_NAME || npm_package_name || path.basename(appRoot);
@@ -127,8 +131,8 @@ const container = {
     return this.mongoClient.db(MONGODB_NAME);
   },
 
-  get userService() {
-    return put(container, "userService", new DbUserService(this));
+  get userService(): UserService {
+    return putSafe(container, "userService", new DbUserService(this));
   },
 };
 

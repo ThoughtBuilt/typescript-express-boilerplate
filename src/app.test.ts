@@ -1,5 +1,9 @@
 import request from "supertest";
 import container from "./app";
+import { TestUserService } from "./services/user-service";
+import { replaceSafe } from "./lib/object-utils";
+
+replaceSafe(container, "userService", new TestUserService());
 
 describe("GET /users", () => {
   test("Accept: text/html - Responds with HTML listing of users.", () => {
