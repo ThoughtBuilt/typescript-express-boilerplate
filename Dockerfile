@@ -6,9 +6,11 @@ ENV NODE_ENV production
 # https://github.com/krallin/tini
 RUN apk add --no-cache tini
 
+# Commands on this container are run as node user.
+USER node
+
 # Set app directory; create if non-existent.
-#USER node
-#RUN mkdir -p /home/node/app
+RUN mkdir -p /home/node/app
 WORKDIR /home/node/app
 
 # Copy package.json and package-lock.json to WORKDIR.
@@ -33,9 +35,6 @@ RUN npm run build
 # Set app to run on port 3000 and expose port.
 ENV PORT 3000
 EXPOSE 3000
-
-# Commands on this container are run as node user.
-USER node
 
 # Don't make Node.js accept the burden of running as PID 1.
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md
