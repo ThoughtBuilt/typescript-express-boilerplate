@@ -22,7 +22,10 @@ export const {
   /* "Standard" env vars */
   DEBUG, // https://github.com/visionmedia/debug (e.g., NODE=*)
   NODE_ENV, // Used by Express. NODE_ENV=(development|production)
+
+  /* Server env vars */
   PORT, // TCP port or pipe this server binds to. (e.g., PORT=3000)
+  GRACEFUL_TIMEOUT, // Number of milliseconds before force-closing connections
 
   /* App env vars */
   APP_NAME, // Name of application. (Override npm_package_name.)

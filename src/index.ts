@@ -1,8 +1,9 @@
 import http from "http";
 
 import createDebug from "debug";
+import { createTerminus } from "@godaddy/terminus";
 
-import { PORT } from "./env";
+import { PORT, GRACEFUL_TIMEOUT } from "./env";
 import container from "./app";
 
 const debug = createDebug(container.appName + ":server");
@@ -22,7 +23,24 @@ const listen = (resolve: () => void, reject: (err: Error) => void) => {
 
 container.app.set("port", portOrPath);
 
+// https://expressjs.com/en/advanced/healthcheck-graceful-shutdown.html
+createTerminus(server, {
+  timeout:
+    typeof GRACEFUL_TIMEOUT === "string"
+      ? parseInt(GRACEFUL_TIMEOUT)
+      : GRACEFUL_TIMEOUT,
+  beforeShutdown: async () => {
+    debug("Graceful shutdown requested");
+  },
+  onShutdown: async () => {
+    await container.stop();
+    debug("Shutdown complete");
+  },
+});
+
 (async () => {
+  await container.start();
+
   try {
     await new Promise<void>(listen);
 
