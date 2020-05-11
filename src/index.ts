@@ -1,4 +1,5 @@
 import http from "http";
+import type { Server } from "net";
 
 import createDebug from "debug";
 
@@ -12,23 +13,13 @@ const server = http.createServer(container.app);
 const port = parseInt(PORT || "3000", 10);
 const portOrPath = isNaN(port) ? <string>PORT /* Path */ : port;
 
-const listen = (resolve: () => void, reject: (err: Error) => void) => {
-  server.once("error", reject);
-  server.listen(portOrPath, () => {
-    server.off("error", reject);
-    resolve();
-  });
-};
-
 container.app.set("port", portOrPath);
 
 (async () => {
   try {
-    await new Promise<void>(listen);
-
-    const addr = server.address();
+    const addr = await listen(server, portOrPath);
     const bind =
-      typeof addr === "string" ? "pipe " + addr : "port " + addr?.port;
+      typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
     debug("Listening on " + bind);
   } catch (error) {
     // handle specific listen errors with friendly messages
@@ -50,3 +41,22 @@ container.app.set("port", portOrPath);
     }
   }
 })();
+
+function listen(server: Server, portOrPath: string | number) {
+  type ServerAddress = NonNullable<ReturnType<typeof server.address>>;
+  return new Promise(
+    (resolve: (addr: ServerAddress) => void, reject: (err: Error) => void) => {
+      server.once("error", reject);
+      server.listen(portOrPath, () => {
+        server.off("error", reject);
+        const addr = server.address();
+        if (addr === null) {
+          // This should not be able to happen.
+          reject(new TypeError("server.address() cannot be null"));
+        } else {
+          resolve(addr);
+        }
+      });
+    }
+  );
+}
